@@ -160,7 +160,7 @@ public class TransactionServiceImpl implements TransactionService {
     @Transactional(readOnly = true)
     public List<TransactionResponse> getTransactionHistory(String accountNumber){
         Account account = accountRepository.findByAccountNumber(accountNumber)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
+                .orElseThrow(() -> new ResourecNotFoundException("Account not found"));
 
         List<Transaction> outgoing = transactionRepository.findByFromAccountId(account.getId());
 
