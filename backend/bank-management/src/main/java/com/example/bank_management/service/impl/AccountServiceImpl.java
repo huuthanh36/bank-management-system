@@ -5,6 +5,7 @@ import com.example.bank_management.dto.response.AccountResponse;
 import com.example.bank_management.entity.Account;
 import com.example.bank_management.entity.Customer;
 import com.example.bank_management.entity.enums.AccountStatus;
+import com.example.bank_management.exception.ResourecNotFoundException;
 import com.example.bank_management.mapper.AccountMapper;
 import com.example.bank_management.repository.AccountRepository;
 import com.example.bank_management.repository.CustomerRepository;
@@ -27,7 +28,7 @@ public class AccountServiceImpl implements AccountService {
     public AccountResponse createAccount(Long customerId, CreateAccountRequest request){
 
         Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new RuntimeException("Customer not found"));
+                .orElseThrow(() -> new ResourecNotFoundException("Customer not found"));
 
         String accountNumber = generateAccountNumber();
 
@@ -47,7 +48,7 @@ public class AccountServiceImpl implements AccountService {
     @Transactional(readOnly = true)
     public AccountResponse getAccount(String accountNumber){
         Account account = accountRepository.findByAccountNumber(accountNumber)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
+                .orElseThrow(() -> new ResourecNotFoundException("Account not found"));
 
         return AccountMapper.toResponse(account);
     }
