@@ -41,8 +41,11 @@ public class SecurityConfig {
                                 "/api/auth/login"
                         ).permitAll()
 
+                        //Tạm thời cho phép Account API
+                        .requestMatchers("/api/accounts/**").permitAll()
+
                         // Các API khác yêu cầu authentication
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 );
 
         return http.build();

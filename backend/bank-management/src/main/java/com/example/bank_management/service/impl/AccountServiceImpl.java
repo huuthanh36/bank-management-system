@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -25,12 +26,19 @@ public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
     private final CustomerRepository customerRepository;
 
-    public AccountResponse createAccount(Long customerId, CreateAccountRequest request){
+    public AccountResponse createAccount(
+            Long customerId,
+            CreateAccountRequest request
+    ) {
 
         Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new ResourecNotFoundException("Customer not found"));
+                .orElseThrow(() ->
+                        new ResourecNotFoundException("Customer not found")
+                );
 
         String accountNumber = generateAccountNumber();
+
+        LocalDateTime now = LocalDateTime.now();
 
         Account account = Account.builder()
                 .customer(customer)
@@ -38,6 +46,8 @@ public class AccountServiceImpl implements AccountService {
                 .balance(BigDecimal.ZERO)
                 .accountType(request.getAccountType())
                 .status(AccountStatus.ACTIVE)
+                .createdAt(now)
+                .updatedAt(now)
                 .build();
 
         Account savedAccount = accountRepository.save(account);

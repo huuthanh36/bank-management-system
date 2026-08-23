@@ -2,6 +2,7 @@ package com.example.bank_management.dto.request;
 
 import com.example.bank_management.entity.enums.AccountType;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Getter
@@ -10,6 +11,6 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class CreateAccountRequest {
-    @NotBlank(message = "Account type is required")
+    @NotNull(message = "Account type is required")
     private AccountType accountType;
 }
