@@ -76,7 +76,7 @@ public class TransactionController {
         );
     }
 
-    @PostMapping("/transactions/accounts/{accountNumber}")
+    @GetMapping("/transactions/accounts/{accountNumber}")
     public ResponseEntity<ApiResponse<List<TransactionResponse>>> getTransactionHistory(@PathVariable String accountNumber){
         List<TransactionResponse> responses = transactionService.getTransactionHistory(accountNumber);
 

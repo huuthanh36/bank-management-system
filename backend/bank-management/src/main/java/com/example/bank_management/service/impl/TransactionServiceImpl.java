@@ -9,6 +9,9 @@ import com.example.bank_management.entity.Transaction;
 import com.example.bank_management.entity.enums.AccountStatus;
 import com.example.bank_management.entity.enums.TransactionStatus;
 import com.example.bank_management.entity.enums.TransactionType;
+import com.example.bank_management.exception.BadRequestException;
+import com.example.bank_management.exception.InsufficientBalanceException;
+import com.example.bank_management.exception.ResourecNotFoundException;
 import com.example.bank_management.mapper.TransactionMapper;
 import com.example.bank_management.repository.AccountRepository;
 import com.example.bank_management.repository.TransactionRepository;
@@ -36,7 +39,7 @@ public class TransactionServiceImpl implements TransactionService {
             DepositRequest request
     ){
         Account account = accountRepository.findByAccountNumberForUpdate(accountNumber)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
+                .orElseThrow(() -> new ResourecNotFoundException("Account not found"));
 
         validateActiveAccount(account);
 
@@ -82,14 +85,14 @@ public class TransactionServiceImpl implements TransactionService {
             WithdrawRequest request
     ){
         Account account = accountRepository.findByAccountNumberForUpdate(accountNumber)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
+                .orElseThrow(() -> new ResourecNotFoundException("Account not found"));
 
         validateActiveAccount(account);
 
         BigDecimal amount = request.getAmount();
 
         if(account.getBalance().compareTo(amount) < 0){
-            throw new RuntimeException("Insufficient balance");
+            throw new InsufficientBalanceException("Insufficient balance");
         }
 
         account.setBalance(account.getBalance().subtract(amount));
@@ -114,14 +117,14 @@ public class TransactionServiceImpl implements TransactionService {
     @Transactional
     public TransactionResponse transfer(TransferRequest request){
         if(request.getFromAccount().equals(request.getToAccount())){
-            throw new RuntimeException("Cannot transfer to the same account");
+            throw new BadRequestException("Cannot transfer to the same account");
         }
 
         Account fromAccount = accountRepository.findByAccountNumberForUpdate(request.getFromAccount())
-                .orElseThrow(() -> new RuntimeException("Sender account not found"));
+                .orElseThrow(() -> new ResourecNotFoundException("Sender account not found"));
 
         Account toAccount = accountRepository.findByAccountNumberForUpdate(request.getToAccount())
-                .orElseThrow(() -> new RuntimeException("Receiver account not found"));
+                .orElseThrow(() -> new ResourecNotFoundException("Receiver account not found"));
 
         validateActiveAccount(fromAccount);
         validateActiveAccount(toAccount);
@@ -157,7 +160,7 @@ public class TransactionServiceImpl implements TransactionService {
     @Transactional(readOnly = true)
     public List<TransactionResponse> getTransactionHistory(String accountNumber){
         Account account = accountRepository.findByAccountNumber(accountNumber)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
+                .orElseThrow(() -> new ResourecNotFoundException("Account not found"));
 
         List<Transaction> outgoing = transactionRepository.findByFromAccountId(account.getId());
 
